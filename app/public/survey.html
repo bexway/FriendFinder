@@ -34,7 +34,7 @@
             </div>
             <br>
             <hr>
-            <select class="simple-select" id="q1">
+            <!-- <select class="simple-select" id="q1">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -47,11 +47,14 @@
                 <option value="3">3</option>
                 <option value="4">4</option>
                 <option value="5">5</option>
-            </select>
+            </select> -->
+            <div id="questionsContainer">
+
+            </div>
 
 
             <div class="text-right">
-              <button type="submit" class="btn btn-primary btn-md" id="submit-btn"><span class="glyphicon glyphicon-fire"></span>Submit</button>
+              <button type="submit" class="btn btn-primary btn-md" id="submit-btn"><span class="glyphicon glyphicon-star"></span>Submit</button>
             </div>
 
 
@@ -83,9 +86,21 @@
       </div>
     </div>
   </div>
-
+  <script src="../data/questions.js"></script>
   <script type="text/javascript">
 
+    // Create survey questions on page
+    for(q in surveyQuestions){
+      var questionDiv = $("<div>").addClass("surveyQuestion").attr("id", "q"+q)
+      questionDiv.append($("<h3>").text(surveyQuestions[q]).addClass("questionText"))
+      var selectTag = $("<select>").addClass("simple-select").attr("id", "q"+q+"answer").html("<option value='1'>1 (Strongly Disagree)</option>"+
+                          "<option value='2'>2 (Somewhat Disagree)</option>"+
+                          "<option value='3'>3 (Neutral)</option>"+
+                          "<option value='4'>4 (Somewhat Agree)</option>"+
+                          "<option value='5'>5 (Strongly Agree)</option>")
+      questionDiv.append(selectTag);
+      $("#questionsContainer").append(questionDiv);
+    }
 
     $('.simple-select').chosen({ width: "210px" });
 
