@@ -35,22 +35,48 @@
             <br>
             <hr>
             <select class="simple-select" id="q1">
-                <option value="foo">foo</option>
-                <option value="bar">bar</option>
-                <option value="baz">baz</option>
-                <option value="qux">qux</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
             </select>
             <select class="simple-select" id="q2">
-                <option value="foo">foo</option>
-                <option value="bar">bar</option>
-                <option value="baz">baz</option>
-                <option value="qux">qux</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
             </select>
 
 
             <div class="text-right">
               <button type="submit" class="btn btn-primary btn-md" id="submit-btn"><span class="glyphicon glyphicon-fire"></span>Submit</button>
             </div>
+
+
+            <!-- https://v4-alpha.getbootstrap.com/components/modal/ -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Best Match</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <h2 id="modal-matchName"></h2>
+                    <img id="modal-matchImage" src="#" alt="A photo of your best matched friend">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
           </div>
         </div>
 
@@ -63,20 +89,30 @@
 
     $('.simple-select').chosen({ width: "210px" });
 
-    console.log($(".simple-select").val())
     // Question: What does this code do?
     $("#submit-btn").on("click", function(event) {
       event.preventDefault();
+      var surveyScore = []
 
       $('.simple-select').each(function(index){
-        console.log(index + ": " + $( this ).val() );
+        surveyScore.push($(this).val());
       });
 
-      // $.post("/api/new", newCharacter)
-      // .done(function(data) {
-      //   console.log(data);
-      //   alert("Adding character...");
-      // });
+      var newFriend = {
+        name: $("#name").val(),
+        photo: $("#photolink").val(),
+        scores: surveyScore
+      }
+
+      $.post("/api/friends", newFriend)
+      .done(function(matchedFriend) {
+        console.log(matchedFriend);
+        $('#modal-matchName').text(matchedFriend.name)
+        $('#modal-matchImage').attr("src", matchedFriend.photo)
+        $('#myModal').modal('show');
+
+
+      });
     });
   </script>
 </body>
