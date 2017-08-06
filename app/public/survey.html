@@ -5,8 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>FriendFinder Survey!</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.5.1/chosen.jquery.min.js"></script>
 </head>
 <body>
-  <p>survey</p>
+  <div class="container">
+    <div class="jumbotron">
+      <h1>Friend Finder Survey</h1>
+      <h3>The best way to find people similar to you!</h3>
+    </div>
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><strong>About you</strong></h3>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label for="name">Name (Required)</label>
+              <input type="text" class="form-control" id="name">
+              <label for="name">Link to photo image</label>
+              <input type="text" class="form-control" id="photolink">
+            </div>
+            <br>
+            <hr>
+            <select class="simple-select" id="q1">
+                <option value="foo">foo</option>
+                <option value="bar">bar</option>
+                <option value="baz">baz</option>
+                <option value="qux">qux</option>
+            </select>
+            <select class="simple-select" id="q2">
+                <option value="foo">foo</option>
+                <option value="bar">bar</option>
+                <option value="baz">baz</option>
+                <option value="qux">qux</option>
+            </select>
+
+
+            <div class="text-right">
+              <button type="submit" class="btn btn-primary btn-md" id="submit-btn"><span class="glyphicon glyphicon-fire"></span>Submit</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+
+
+    $('.simple-select').chosen({ width: "210px" });
+
+    console.log($(".simple-select").val())
+    // Question: What does this code do?
+    $("#submit-btn").on("click", function(event) {
+      event.preventDefault();
+
+      $('.simple-select').each(function(index){
+        console.log(index + ": " + $( this ).val() );
+      });
+
+      // $.post("/api/new", newCharacter)
+      // .done(function(data) {
+      //   console.log(data);
+      //   alert("Adding character...");
+      // });
+    });
+  </script>
 </body>
 </html>
