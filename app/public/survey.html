@@ -32,24 +32,9 @@
               <label for="name">Link to photo image</label>
               <input type="text" class="form-control" id="photolink">
             </div>
-            <br>
             <hr>
-            <!-- <select class="simple-select" id="q1">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select>
-            <select class="simple-select" id="q2">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-            </select> -->
             <div id="questionsContainer">
-
+              <!-- survey questions will go here -->
             </div>
 
 
@@ -93,7 +78,9 @@
     for(q in surveyQuestions){
       var questionDiv = $("<div>").addClass("surveyQuestion").attr("id", "q"+q)
       questionDiv.append($("<h3>").text(surveyQuestions[q]).addClass("questionText"))
-      var selectTag = $("<select>").addClass("simple-select").attr("id", "q"+q+"answer").html("<option value='1'>1 (Strongly Disagree)</option>"+
+      var selectTag = $("<select>").addClass("chosen-select").attr("data-placeholder","Select an Option")
+                    .html("<option value></option>"+
+                          "<option value='1'>1 (Strongly Disagree)</option>"+
                           "<option value='2'>2 (Somewhat Disagree)</option>"+
                           "<option value='3'>3 (Neutral)</option>"+
                           "<option value='4'>4 (Somewhat Agree)</option>"+
@@ -102,32 +89,44 @@
       $("#questionsContainer").append(questionDiv);
     }
 
-    $('.simple-select').chosen({ width: "210px" });
+    //activate dropdowns (https://harvesthq.github.io/chosen/)
+    $('.chosen-select').chosen({ width: "210px" });
 
-    // Question: What does this code do?
+    // On submit button click, process survey
     $("#submit-btn").on("click", function(event) {
       event.preventDefault();
       var surveyScore = []
+      var requirementsFilled = true;
 
-      $('.simple-select').each(function(index){
+      // if the name and/or photolink aren't filled out, the requirements aren't fulfilled
+      if($("#name").val().trim() === "" || $("#photolink").val().trim() === ""){
+        requirementsFilled = false;
+      }
+      $('.chosen-select').each(function(index){
+        if($(this).val() == ""){
+          //If any questions haven't been answered, the requirements haven't been fulfilled
+          requirementsFilled = false;
+        }
         surveyScore.push($(this).val());
       });
 
-      var newFriend = {
-        name: $("#name").val(),
-        photo: $("#photolink").val(),
-        scores: surveyScore
+      if(requirementsFilled){
+        var newFriend = {
+          name: $("#name").val().trim(),
+          photo: $("#photolink").val().trim(),
+          scores: surveyScore
+        }
+
+        $.post("/api/friends", newFriend)
+        .done(function(matchedFriend) {
+          // console.log(matchedFriend);
+          $('#modal-matchName').text(matchedFriend.name)
+          $('#modal-matchImage').attr("src", matchedFriend.photo)
+          $('#myModal').modal('show');
+        });
+      } else{
+        alert("Please fill out all the fields before submitting so we can get the best results!")
       }
-
-      $.post("/api/friends", newFriend)
-      .done(function(matchedFriend) {
-        console.log(matchedFriend);
-        $('#modal-matchName').text(matchedFriend.name)
-        $('#modal-matchImage').attr("src", matchedFriend.photo)
-        $('#myModal').modal('show');
-
-
-      });
     });
   </script>
 </body>
