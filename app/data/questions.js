@@ -1,4 +1,4 @@
-var surveyQuestions = [
+module.exports = [
   "Question 1",
   "Question 2",
   "Question 3",

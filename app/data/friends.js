@@ -1,4 +1,4 @@
-module.exports = friendsList = [
+module.exports = [
   {
   "name": "friend",
   "photo": "http://lorempixel.com/300/300/",

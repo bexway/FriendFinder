@@ -55,7 +55,7 @@
                   </div>
                   <div class="modal-body">
                     <h2 id="modal-matchName"></h2>
-                    <img id="modal-matchImage" src="#" alt="A photo of your best matched friend">
+                    <img id="modal-matchImage" style="max-width:300px;max-height:300px;" src="#" alt="A photo of your best matched friend">
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -71,63 +71,69 @@
       </div>
     </div>
   </div>
-  <script src="../data/questions.js"></script>
   <script type="text/javascript">
-
-    // Create survey questions on page
-    for(q in surveyQuestions){
-      var questionDiv = $("<div>").addClass("surveyQuestion").attr("id", "q"+q)
-      questionDiv.append($("<h3>").text(surveyQuestions[q]).addClass("questionText"))
-      var selectTag = $("<select>").addClass("chosen-select").attr("data-placeholder","Select an Option")
-                    .html("<option value></option>"+
-                          "<option value='1'>1 (Strongly Disagree)</option>"+
-                          "<option value='2'>2 (Somewhat Disagree)</option>"+
-                          "<option value='3'>3 (Neutral)</option>"+
-                          "<option value='4'>4 (Somewhat Agree)</option>"+
-                          "<option value='5'>5 (Strongly Agree)</option>")
-      questionDiv.append(selectTag);
-      $("#questionsContainer").append(questionDiv);
-    }
-
-    //activate dropdowns (https://harvesthq.github.io/chosen/)
-    $('.chosen-select').chosen({ width: "210px" });
-
-    // On submit button click, process survey
-    $("#submit-btn").on("click", function(event) {
-      event.preventDefault();
-      var surveyScore = []
-      var requirementsFilled = true;
-
-      // if the name and/or photolink aren't filled out, the requirements aren't fulfilled
-      if($("#name").val().trim() === "" || $("#photolink").val().trim() === ""){
-        requirementsFilled = false;
+    //get survey questions
+    var surveyQuestions;
+    $.get("/api/questions", function(data) {
+      surveyQuestions = data;
+      // Create survey questions on page
+      for(q in surveyQuestions){
+        var questionDiv = $("<div>").addClass("surveyQuestion").attr("id", "q"+q)
+        questionDiv.append($("<h3>").text(surveyQuestions[q]).addClass("questionText"))
+        var selectTag = $("<select>").addClass("chosen-select").attr("data-placeholder","Select an Option")
+                      .html("<option value></option>"+
+                            "<option value='1'>1 (Strongly Disagree)</option>"+
+                            "<option value='2'>2 (Somewhat Disagree)</option>"+
+                            "<option value='3'>3 (Neutral)</option>"+
+                            "<option value='4'>4 (Somewhat Agree)</option>"+
+                            "<option value='5'>5 (Strongly Agree)</option>")
+        questionDiv.append(selectTag);
+        $("#questionsContainer").append(questionDiv);
       }
-      $('.chosen-select').each(function(index){
-        if($(this).val() == ""){
-          //If any questions haven't been answered, the requirements haven't been fulfilled
+
+      //activate dropdowns (https://harvesthq.github.io/chosen/)
+      $('.chosen-select').chosen({ width: "210px" });
+
+      // On submit button click, process survey
+      $("#submit-btn").on("click", function(event) {
+        event.preventDefault();
+        var surveyScore = []
+        var requirementsFilled = true;
+
+        // if the name and/or photolink aren't filled out, the requirements aren't fulfilled
+        if($("#name").val().trim() === "" || $("#photolink").val().trim() === ""){
           requirementsFilled = false;
         }
-        surveyScore.push($(this).val());
+        $('.chosen-select').each(function(index){
+          if($(this).val() == ""){
+            //If any questions haven't been answered, the requirements haven't been fulfilled
+            requirementsFilled = false;
+          }
+          surveyScore.push($(this).val());
+        });
+
+        if(requirementsFilled){
+          var newFriend = {
+            name: $("#name").val().trim(),
+            photo: $("#photolink").val().trim(),
+            scores: surveyScore
+          }
+
+          $.post("/api/friends", newFriend)
+          .done(function(matchedFriend) {
+            // console.log(matchedFriend);
+            $('#modal-matchName').text(matchedFriend.name)
+            $('#modal-matchImage').attr("src", matchedFriend.photo)
+            $('#myModal').modal('show');
+          });
+        } else{
+          alert("Please fill out all the fields before submitting so we can get the best results!")
+        }
       });
 
-      if(requirementsFilled){
-        var newFriend = {
-          name: $("#name").val().trim(),
-          photo: $("#photolink").val().trim(),
-          scores: surveyScore
-        }
-
-        $.post("/api/friends", newFriend)
-        .done(function(matchedFriend) {
-          // console.log(matchedFriend);
-          $('#modal-matchName').text(matchedFriend.name)
-          $('#modal-matchImage').attr("src", matchedFriend.photo)
-          $('#myModal').modal('show');
-        });
-      } else{
-        alert("Please fill out all the fields before submitting so we can get the best results!")
-      }
     });
+
+
   </script>
 </body>
 </html>
